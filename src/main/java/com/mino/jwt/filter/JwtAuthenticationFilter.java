@@ -1,5 +1,7 @@
 package com.mino.jwt.filter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mino.jwt.config.auth.PrincipalDetails;
 import com.mino.jwt.model.User;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.Buffer;
+import java.util.Date;
 
 
 //스프링시큐리티에 기본등록되는 UsernamePasswordAuthenticationFilter를 상속해서 사용
@@ -90,7 +93,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         //4. JWT 토큰을 생성해 응답 -> JWT 토큰을 request 요청한 사용자에게 응답
-        System.out.println("susccessfulAuthentication 실행됨");
-        super.successfulAuthentication(request, response, chain, authResult);
+        System.out.println("인증이 완료되어 susccessfulAuthentication 실행됨");
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+
+        //라이브러리 이용해 JWT 토큰 만들기
+        //: HMAC512방식으로 고유한 Key키값을 가진다.
+        String jwtToken = JWT.create()
+//                .withSubject(principalDetails.getUsername())
+                .withSubject("cos 토큰")
+                //10분으로 만료시간 설정
+                .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 10)))
+                //사용자 정보
+                .withClaim("id", principalDetails.getUser().getId())
+                .withClaim("username", principalDetails.getUser().getUsername())
+                //시크릿값으로 서버 키값에 해당한다.
+                .sign(Algorithm.HMAC512("cos"));
+        response.addHeader("Authorization", "Bearer "+jwtToken);
+
+//        super.successfulAuthentication(request, response, chain, authResult);
     }
 }
