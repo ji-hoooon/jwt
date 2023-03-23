@@ -13,7 +13,7 @@ public class PrincipalDetails implements UserDetails {
 
     private User user;
 
-    PrincipalDetails(User user){
+    public PrincipalDetails(User user){
         this.user=user;
     }
 

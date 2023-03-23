@@ -1,6 +1,7 @@
 package com.mino.jwt.config;
 
 import com.mino.jwt.filter.JwtAuthenticationFilter;
+import com.mino.jwt.filter.JwtAuthorizationFilter;
 import com.mino.jwt.filter.MyFilter1;
 import com.mino.jwt.filter.MyFilter3;
 import com.mino.jwt.repository.UserRepository;
@@ -26,8 +27,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig{
     private final CorsFilter corsFilter;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 //    @Autowired
 //    private CorsConfig corsConfig;
     @Bean
@@ -74,8 +74,17 @@ public class SecurityConfig{
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http
                     .addFilter(corsFilter)
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager));
-//                    .addFilter(new JwtAuthenticationFilter(authenticationManager, userRepository));
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
+//                    .addFilter(new JwtAuthorizationFilter(authenticationManager));
+                    //6. 시큐리티 설정 클래스에서 리포지토리 연결을 위해서 두번째 인자로 전달
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
+//                    .addFilter(new JwtAuthenticationFilter(authenticationManager
+//
+//
+//
+//
+//
+//                                     , userRepository));
         }
     }
 }

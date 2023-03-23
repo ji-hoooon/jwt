@@ -31,4 +31,22 @@ public class RestApiController {
         userRepository.save(user);
         return "회원가입완료";
     }
+
+    //정상적으로 요청하는 테스트를 위한 메서드 작성
+    //user, manager, admin
+    @GetMapping("/api/v1/user")
+    public String user(){
+        return "user";
+    }
+
+    //manager, admin
+    @GetMapping("/api/v1/manager")
+    public String manager(){
+        return "manager";
+    }
+    //admin
+    @GetMapping("/api/v1/admin")
+    public String admin(){
+        return "admin";
+    }
 }
